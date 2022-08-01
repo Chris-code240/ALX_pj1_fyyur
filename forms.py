@@ -1,17 +1,15 @@
 from datetime import datetime
 from email.policy import default
-from flask_wtf import Form
+from wtforms import Form as BaseForm
 from wtforms import StringField, SelectField, SelectMultipleField, DateTimeField, BooleanField
 from wtforms.validators import DataRequired, AnyOf, URL,ValidationError
+import re
 
 def validate_phone(form,field):
-    keyList = ['+',' ']
-    if len(field.data) >= 8 and len(field.data) <= 15:
-        for i in field.data:
-            if not i.isnumeric() or i not in keyList:
-                raise ValidationError('Field must be less than 50 characters')
+    if not re.findall(r"[\d]{4}-[\d]{3}-[\d]{3}", field.data):
+        raise ValidationError('Please provide a correct phone number')
 
-class ShowForm(Form):
+class ShowForm(BaseForm):
     artist_id = StringField(
         'artist_id',
         validators=[DataRequired()]
@@ -26,7 +24,7 @@ class ShowForm(Form):
         default= datetime.today()
     )
 
-class VenueForm(Form):
+class VenueForm(BaseForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
@@ -138,7 +136,7 @@ class VenueForm(Form):
 
 
 
-class ArtistForm(Form):
+class ArtistForm(BaseForm):
     name = StringField(
         'name', validators=[DataRequired()]
     )
